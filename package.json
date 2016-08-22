@@ -1,36 +1,44 @@
 {
-	"name": "eagle-to-svg",
-	"version": "0.0.1",
-	"description": "Renders Eagle CAD schematic and board files as svg images",
-	"main": "index.js",
-	"scripts": {
-		"lint": "eslint index.js 'test/*.js'",
-		"test": "nyc mocha",
-		"test:watch": "mocha --watch --reporter=dot",
-		"coverage": "nyc report",
-		"posttest": "npm run lint"
-	},
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/dvdfreitag/eagle2svg.git"
-	},
-	"keywords": [
-		"eagle",
-		"pcb",
-		"hardware",
-		"svg",
-		"eagle-to-svg",
-		"circuit",
-		"schematic"
-	],
-	"devDependencies": {
-		"chai": "^3.5.0",
-		"eslint": "^3.3.1",
-		"mocha": "^3.0.2",
-		"nyc": "^8.1.0"
-	},
-	"dependencies": {
-		"svg.js": "^2.3.4"
-	},
-	"license": "MIT"
+  "name": "eagle-to-svg",
+  "version": "0.0.1",
+  "description": "Renders Eagle CAD schematic and board files as svg images",
+  "main": "index.js",
+  "scripts": {
+    "lint": "eslint index.js 'test/*.js'",
+    "test": "nyc mocha",
+    "test:watch": "mocha --watch --reporter=dot",
+    "coverage": "nyc report",
+    "posttest": "npm run lint"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dvdfreitag/eagle-to-svg.git"
+  },
+  "keywords": [
+    "eagle",
+    "pcb",
+    "hardware",
+    "svg",
+    "eagle-to-svg",
+    "circuit",
+    "schematic"
+  ],
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "eslint": "^3.3.1",
+    "mocha": "^3.0.2",
+    "nyc": "^8.1.0"
+  },
+  "dependencies": {
+    "svg.js": "^2.3.4"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/dvdfreitag/eagle2svg/issues"
+  },
+  "homepage": "https://github.com/dvdfreitag/eagle2svg#readme",
+  "directories": {
+    "test": "test"
+  },
+  "author": "David Freitag <dvdfreitag@gmail.com>"
 }
