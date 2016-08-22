@@ -31,5 +31,6 @@
 	},
 	"dependencies": {
 		"svg.js": "^2.3.4"
-	}
+	},
+	"license": "MIT"
 }
