@@ -1,10 +1,10 @@
 {
   "name": "eagle-to-svg",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Renders Eagle CAD schematic and board files as svg images",
   "main": "index.js",
   "scripts": {
-    "lint": "eslint index.js 'test/*.js'",
+    "lint": "eslint '*.js' 'test/*.js'",
     "test": "nyc mocha",
     "test:watch": "mocha --watch --reporter=dot",
     "coverage": "nyc report",
@@ -30,7 +30,7 @@
     "nyc": "^8.1.0"
   },
   "dependencies": {
-    "svg.js": "^2.3.4"
+    "xml2json": "^0.10.0"
   },
   "license": "MIT",
   "bugs": {
