@@ -59,7 +59,7 @@ function schematicGetLayer(id) {
 }
 
 function schematicGetLayers(objects) {
-	if (objects === null) return null
+	if (objects == null) return null
 	if (!(Array.isArray(objects))) return null
 
 	var layers = []
@@ -68,10 +68,10 @@ function schematicGetLayers(objects) {
 		if (objects[i].visible !== 'yes') continue
 
 		var layer = schematicGetLayer(Number(objects[i].number))
-		if (layer === null) continue
+		if (layer == null) continue
 
 		var color = schematicGetColor(Number(objects[i].color))
-		if (color === null) continue
+		if (color == null) continue
 
 		layers.push({ id: layer.id, name: layer.name, color: color })
 	}
@@ -80,35 +80,47 @@ function schematicGetLayers(objects) {
 }
 
 function getSymbolName(symbols, part, instance, devicesets) {
-	if (symbols === null) return null
-	if (part === null) return null
-	if (instance === null) return null
-	if (deviceset === null) return null
+	if (symbols == null) return null
+	if (part == null) return null
+	if (instance == null) return null
+	if (devicesets == null) return null
 
 	var deviceset = null
 	var gate = null
+	var symbol = null
 
 	if (Array.isArray(devicesets)) {
 		deviceset = devicesets.find(x => x.name === part.deviceset)
-	} else if (deviceset.name === part.deviceset) {
+	} else if (devicesets.name === part.deviceset) {
 		deviceset = devicesets
 	}
-	
+
 	if (Array.isArray(deviceset.gates.gate)) {
 		gate = deviceset.gates.gate.find(x => x.name === instance.gate)
 	} else if (deviceset.gates.gate.name === instance.gate) {
 		gate = deviceset.gates.gate
 	}
 
-	if (deviceset === null) return null
-	if (gate === null) return null
+	if (deviceset == null) return null
+	if (gate == null) return null
 
-	return symbols.find(x => x.name === gate.symbol)
+	if (Array.isArray(symbols))
+	{
+		symbol = symbols.find(x => x.name === gate.symbol)
+
+		if (symbol != null) return symbol.name
+	}
+
+	if (symbols.name === gate.symbol) {
+		return symbols.name
+	}
+
+	return null
 }
 
 function schematicGetParts(schematic, sheet) {
-	if (schematic === null) return null
-	if (sheet === null) return null
+	if (schematic == null) return null
+	if (sheet == null) return null
 
 	var libraries = schematic.libraries.library
 	var parts = schematic.parts.part
@@ -116,51 +128,76 @@ function schematicGetParts(schematic, sheet) {
 
 	var schematicParts = []
 
-	for (var i = 0; i < instances.length; i++) {
-		var part = parts.find(x => x.name === instances[i].name)
-		if (part === null) continue
+	instances.forEach(function(instance) {
+		if (instance == null) return
+
+		var part = parts.find(x => x.name === instance.part)
+		if (part == null) return
 
 		var library = libraries.find(x => x.name === part.library)
-		if (library === null) continue
+		if (library == null) return
 
 		var devicesets = library.devicesets.deviceset
-		if (devicesets === null) continue
+		if (devicesets == null) return
 
 		var symbols = library.symbols.symbol
-		if (symbols === null) continue
+		if (symbols == null) return
 
-		var symbolName = getSymbolName(symbols, part, instances[i], devicesets)
-		if (symbolName === null) continue
+		var symbolName = getSymbolName(symbols, part, instance, devicesets)
+		if (symbolName == null) return
 
-
-		var value = ((part.value !== null) ? (part.value) : (part.deviceset + part.device))
+		var value = ((part.value != null) ? (part.value) : (part.deviceset + part.device))
 
 		schematicParts.push({
 			designator: part.name,
 			name: part.deviceset + part.device,
 			value: value,
 			library: part.library,
-			instance: instances[i],
+			instance: instance,
 			symbol: symbolName
 		})
-	}
+	})
 
 	return schematicParts
 }
 
-function getSchematicSymbols(parts, symbols) {
-	if (parts === null) return null
-	if (symbols === null) return null
+function schematicGetSymbols(parts, libraries) {
+	if (parts == null) return null
+	if (libraries == null) return null
 
+	var symbols = []
 
+	parts.forEach(function(part) {
+		var library = libraries.find(x => x.name === part.library)
+		if (library == null) return
+
+		var symbol
+
+		if (Array.isArray(library.symbols.symbol)) {
+			symbol = library.symbols.symbol.find(x => x.name === part.symbol)
+			if (symbol == null) return
+		} else {
+			symbol = library.symbols.symbol
+			if (symbol == null || symbol.name !== part.symbol) return
+		}
+
+		if (symbols.indexOf(symbol) === -1) symbols.push(symbol)
+	})
+
+	return symbols
 }
 
 module.exports.parseSchematic = function(data, callback) {
 	var raw = parser.toJson(data, { object: true })
 
+	if (raw == null || raw.eagle === raw) {
+		callback('Error: Failed to parse schematic')
+		return
+	}
+
 	var sheet
 
-	// TODO: Add multi-layer support
+	// TODO: Add multi-sheet support
 	if (Array.isArray(raw.eagle.drawing.schematic.sheets.sheet)) {
 		sheet = raw.eagle.drawing.schematic.sheets.sheet[0]
 	} else {
@@ -168,7 +205,25 @@ module.exports.parseSchematic = function(data, callback) {
 	}
 
 	var layers = schematicGetLayers(raw.eagle.drawing.layers.layer)
+
+	if (layers == null || layers.length < 1) {
+		callback('Error: Failed to parse schematic layers')
+		return
+	}
+
 	var parts = schematicGetParts(raw.eagle.drawing.schematic, sheet)
 
-	setTimeout(callback(null, { layers: layers, parts: parts, symbols: null }), 50)
+	if (parts == null || parts.length < 1) {
+		callback('Error: Failed to parse schematic parts')
+		return
+	}
+
+	var symbols = schematicGetSymbols(parts, raw.eagle.drawing.schematic.libraries.library)
+
+	if (symbols == null || symbols.length < 1) {
+		callback('Error: Failed to parse schematic symbols')
+		return
+	}
+
+	setTimeout(callback(null, { layers: layers, parts: parts, symbols: symbols }), 50)
 }
