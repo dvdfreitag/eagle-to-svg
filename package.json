@@ -1,6 +1,6 @@
 {
   "name": "eagle-to-svg",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Renders Eagle CAD schematic and board files as svg images",
   "main": "index.js",
   "scripts": {
