@@ -39,7 +39,6 @@
 		"no-alert": "error",
 		"no-caller": "error",
 		"no-else-return": "error",
-		"no-eq-null": "error",
 		"no-eval": "error",
 		"no-extend-native": "error",
 		"no-extra-bind": "error",
